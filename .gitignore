@@ -1,0 +1,8 @@
+# Dependências e arquivos de ambiente
+.DS_Store
+Thumbs.db
+.env
+.env.local
+
+# Arquivos de inspeção e auditoria local
+.taste-skill/

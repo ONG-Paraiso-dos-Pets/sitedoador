@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#077172">
+  <title>ONG Paraíso dos Pets · Cadastro de Doador</title>
+  <meta name="description" content="Seja doador da ONG Paraíso dos Pets preenchendo seu nome completo, telefone e e-mail. Conheça nosso projeto e os cães resgatados.">
+  <link rel="icon" href="assets/logo-nova.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Por qué esta fuente: se utiliza únicamente Inter para garantizar legibilidad moderna y limpieza visual en toda la página -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <main>
+    <!-- ======================================================================
+         1. CADASTRO DE DOADOR (Layout dividido con perro a la izquierda y formulario a la derecha)
+         Por qué esta composición: replica la referencia visual solicitada por el usuario,
+         uniendo el retrato de gran formato del perro con los 3 campos obligatorios.
+         ====================================================================== -->
+    <section id="cadastro" class="cadastro-hero" aria-labelledby="form-heading">
+      <div class="cadastro-hero__inner">
+
+        <!-- Columna izquierda: retrato protagonista del perro -->
+        <figure class="cadastro-hero__media">
+          <img
+            src="assets/dog-cadastro.png"
+            alt="Retrato aproximado de um cão olhando diretamente para a câmera"
+            width="630"
+            height="726"
+          >
+        </figure>
+
+        <!-- Columna derecha: formulario limpio con los 3 campos obligatorios -->
+        <div class="cadastro-hero__content">
+          <div class="cadastro-hero__header">
+            <h1 id="form-heading" class="cadastro-hero__title">
+              <span class="cadastro-hero__title-accent">Seja Doador,</span>
+              <span class="cadastro-hero__title-sub">e ajude um aumigo a ter uma vida digna</span>
+            </h1>
+          </div>
+
+          <!-- Por qué novalidate: delega la validación al módulo JS para mostrar mensajes claros en portugués y formato brasileño -->
+          <form id="donor-capture-form" class="donor-form" novalidate>
+            <div class="field-group">
+              <label for="donor-name" class="field-label">Nome completo</label>
+              <input
+                type="text"
+                id="donor-name"
+                name="nome"
+                class="field-input"
+                placeholder="Informe seu nome completo"
+                autocomplete="name"
+                required
+                aria-describedby="donor-name-feedback"
+              >
+              <span id="donor-name-feedback" class="field-feedback" aria-live="polite"></span>
+            </div>
+
+            <div class="field-group">
+              <label for="donor-phone" class="field-label">Telefone</label>
+              <input
+                type="tel"
+                id="donor-phone"
+                name="telefone"
+                class="field-input"
+                placeholder="(16) 99999-9999"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                maxlength="15"
+                required
+                aria-describedby="donor-phone-feedback"
+              >
+              <span id="donor-phone-feedback" class="field-feedback" aria-live="polite"></span>
+            </div>
+
+            <div class="field-group">
+              <label for="donor-email" class="field-label">E-mail</label>
+              <input
+                type="email"
+                id="donor-email"
+                name="email"
+                class="field-input"
+                placeholder="Informe o e-mail"
+                autocomplete="email"
+                required
+                aria-describedby="donor-email-feedback"
+              >
+              <span id="donor-email-feedback" class="field-feedback" aria-live="polite"></span>
+            </div>
+
+            <button type="submit" id="donor-submit-btn" class="submit-btn">
+              Cadastrar
+            </button>
+          </form>
+
+          <!-- Por qué este panel de confirmación: ofrece retroalimentación inmediata tras validar los 3 campos sin recargar la página -->
+          <div id="donor-success-panel" class="donor-success" tabindex="-1" hidden aria-live="polite">
+            <div class="donor-success__icon" aria-hidden="true">✓</div>
+            <h2 class="donor-success__title">Cadastro realizado com sucesso!</h2>
+            <p class="donor-success__text">
+              Obrigado pelo seu apoio à ONG Paraíso dos Pets. Confira os dados enviados:
+            </p>
+
+            <dl class="donor-success__summary">
+              <div class="donor-success__row">
+                <dt>Nome completo</dt>
+                <dd id="summary-donor-name"></dd>
+              </div>
+              <div class="donor-success__row">
+                <dt>Telefone</dt>
+                <dd id="summary-donor-phone"></dd>
+              </div>
+              <div class="donor-success__row">
+                <dt>E-mail</dt>
+                <dd id="summary-donor-email"></dd>
+              </div>
+            </dl>
+
+            <button type="button" id="reset-donor-form-btn" class="secondary-btn">
+              Editar meus dados
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         2. SOBRE O PROJETO / ONG
+         Por qué entre el formulario y las fotos: contextualiza la misión de la
+         ONG Paraíso dos Pets antes de presentar a los perros rescatados.
+         ====================================================================== -->
+    <section id="sobre" class="about-section" aria-labelledby="about-heading">
+      <div class="about-section__inner">
+        <span class="section-tag">Nossa história e missão</span>
+        <h2 id="about-heading" class="section-title">Sobre a ONG Paraíso dos Pets</h2>
+        <p class="about-section__lead">
+          Fundada em Ribeirão Preto (SP) por Luiz Moraes, a <strong>ONG Paraíso dos Pets</strong> atua no resgate, reabilitação e cuidado diário de mais de <strong>130 cães</strong> vítimas de abandono e maus-tratos.
+        </p>
+        <p class="about-section__text">
+          Nosso abrigo oferece alimentação diária de qualidade, acompanhamento veterinário contínuo, vacinação, castração e muito carinho enquanto cada animal aguarda por uma adoção responsável ou recebe o amparo de nossos doadores e padrinhos.
+        </p>
+
+        <div class="about-stats">
+          <div class="about-stats__item">
+            <strong class="about-stats__number">+130</strong>
+            <span class="about-stats__label">Cães acolhidos no abrigo</span>
+          </div>
+          <div class="about-stats__item">
+            <strong class="about-stats__number">+150</strong>
+            <span class="about-stats__label">Atendimentos veterinários</span>
+          </div>
+          <div class="about-stats__item">
+            <strong class="about-stats__number">100%</strong>
+            <span class="about-stats__label">Dedicação e transparência</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3. IMAGENS DOS CÃES
+         Por qué al final: mantiene la galería fotográfica real de los perros del
+         refugio para cerrar la página con conexión visual y emocional.
+         ====================================================================== -->
+    <section id="caes" class="dogs-section" aria-labelledby="dogs-heading">
+      <div class="dogs-section__header">
+        <span class="section-tag">Nossos resgatados</span>
+        <h2 id="dogs-heading" class="section-title">Quem vive no abrigo</h2>
+      </div>
+
+      <div class="showcase__band">
+        <figure class="showcase__panel showcase__panel--1" data-scroll-to-form>
+          <img
+            src="assets/62.png"
+            alt="Cão preto de pelo longo apoiado na cerca de madeira do abrigo em Ribeirão Preto"
+            width="750"
+            height="750"
+            loading="lazy"
+          >
+          <figcaption class="showcase__scrim">
+            <p class="showcase__panel-title">Mais de 130 vidas sob nosso teto em Ribeirão Preto</p>
+            <p class="showcase__panel-sub">Seu cadastro como doador transforma o destino de cada um deles</p>
+          </figcaption>
+        </figure>
+
+        <figure class="showcase__panel showcase__panel--2" data-scroll-to-form>
+          <img
+            src="assets/24.png"
+            alt="Zezinho, cão caramelo de pelo aramado tomando sol na grama do abrigo"
+            width="500"
+            height="500"
+            loading="lazy"
+          >
+          <figcaption class="showcase__name-tag">Zezinho</figcaption>
+        </figure>
+
+        <figure class="showcase__panel showcase__panel--3" data-scroll-to-form>
+          <img
+            src="assets/26.png"
+            alt="Tutti, cão preto e canela correndo entre as árvores do abrigo"
+            width="500"
+            height="500"
+            loading="lazy"
+          >
+          <figcaption class="showcase__name-tag">Tutti</figcaption>
+        </figure>
+
+        <figure class="showcase__panel showcase__panel--4" data-scroll-to-form>
+          <img
+            src="assets/45.png"
+            alt="Toddy, cão branco de coleira vermelha olhando atento para a câmera"
+            width="500"
+            height="500"
+            loading="lazy"
+          >
+          <figcaption class="showcase__name-tag">Toddy</figcaption>
+        </figure>
+      </div>
+
+      <p class="showcase__caption">
+        Fotografias reais registradas no abrigo da ONG Paraíso dos Pets em Ribeirão Preto (SP): Zezinho, Tutti, Toddy e seus companheiros.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>ONG Paraíso dos Pets · Ribeirão Preto, SP</p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

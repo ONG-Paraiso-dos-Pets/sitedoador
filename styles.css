@@ -1,0 +1,623 @@
+/* ==========================================================================
+   ONG Paraíso dos Pets · Captação de Doadores
+   Por qué este diseño: reproduce la composición del print de referencia en la
+   sección de Cadastro (perro de gran formato a la izquierda sobre fondo #f6f6f6
+   y formulario limpio a la derecha), conservando las secciones Sobre y Cães
+   abajo con la fuente Inter y la paleta de la ONG.
+   ========================================================================== */
+
+:root {
+  /* Por qué #f6f6f6 en --color-hero-bg: coincide exactamente con el fondo del
+     retrato del perro (assets/dog-cadastro.png) para lograr una fusión perfecta. */
+  --color-hero-bg: #f6f6f6;
+  --color-bg: #eef6f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5fafa;
+  --color-brand-primary: #077172;
+  --color-brand-accent: #00b4b4;
+  --color-brand-dark: #1a3a4a;
+  --color-brand-cream: #f4f4bf;
+  --color-text: #2c3539;
+  --color-text-muted: #5a6b73;
+  --color-input-border: #8c969e;
+  --color-border: #cde0e0;
+  --color-error: #c81e1e;
+  --color-error-bg: #fdf2f2;
+  --color-success: #057a55;
+  --color-success-bg: #ecfdf5;
+
+  /* Por qué Inter: solicitada por el usuario como tipografía única del proyecto. */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 12px;
+  --transition-fast: 160ms ease;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100svh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-hero-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+p,
+figure,
+figcaption,
+dl,
+dd {
+  margin: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   1. Sección de Cadastro (Estilo del print con perro al lado del formulario)
+   Por qué: dispone una cuadrícula de dos columnas donde la fotografía del perro
+   se apoya en el borde inferior izquierdo y el formulario limpio se alinea a la derecha.
+   -------------------------------------------------------------------------- */
+.cadastro-hero {
+  background-color: var(--color-hero-bg);
+  width: 100%;
+  overflow: hidden;
+}
+
+.cadastro-hero__inner {
+  max-width: 86rem;
+  margin-right: auto;
+  margin-left: 0;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: stretch;
+  column-gap: clamp(1.5rem, 4vw, 4rem);
+  padding-right: clamp(1.25rem, 4vw, 3.5rem);
+  padding-left: 0;
+}
+
+.cadastro-hero__media {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding-top: 0;
+  margin: 0;
+}
+
+.cadastro-hero__media img {
+  width: 100%;
+  max-width: 43rem;
+  height: 100%;
+  max-height: 46rem;
+  object-fit: cover;
+  object-position: left top;
+  filter: brightness(1.04) contrast(1.04);
+  mix-blend-mode: multiply;
+}
+
+.cadastro-hero__content {
+  align-self: center;
+  width: 100%;
+  max-width: 24.5rem;
+  padding-block: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.cadastro-hero__header {
+  margin-bottom: 1.75rem;
+}
+
+.cadastro-hero__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cadastro-hero__title-accent {
+  font-size: clamp(1.85rem, 2.6vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--color-brand-primary);
+}
+
+.cadastro-hero__title-sub {
+  font-size: clamp(1.05rem, 1.35vw, 1.22rem);
+  font-weight: 400;
+  line-height: 1.35;
+  color: #3b4248;
+}
+
+/* Formulario minimalista inspirado en el print */
+.donor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.donor-form[hidden] {
+  display: none;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #3b4248;
+  padding-left: 0.35rem;
+}
+
+.field-input {
+  width: 100%;
+  height: 2.95rem;
+  padding: 0 0.9rem;
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.field-input::placeholder {
+  color: #a0aab0;
+}
+
+.field-input:focus {
+  outline: none;
+  background-color: #ffffff;
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 3px rgba(7, 113, 114, 0.16);
+}
+
+.field-input[aria-invalid="true"] {
+  border-color: var(--color-error);
+  background-color: var(--color-error-bg);
+}
+
+.field-input[data-valid="true"] {
+  border-color: var(--color-success);
+  background-color: #ffffff;
+}
+
+.field-feedback {
+  font-size: 0.78rem;
+  line-height: 1.35;
+  padding-left: 0.35rem;
+  color: var(--color-text-muted);
+}
+
+.field-feedback:empty {
+  display: none;
+}
+
+.field-feedback.is-error {
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+.field-feedback.is-valid {
+  color: var(--color-success);
+  font-weight: 500;
+}
+
+.submit-btn {
+  margin-top: 0.5rem;
+  width: 100%;
+  height: 3.1rem;
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.submit-btn:hover {
+  background-color: var(--color-brand-dark);
+}
+
+.submit-btn:active {
+  transform: scale(0.99);
+}
+
+.submit-btn:focus-visible {
+  outline: 3px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
+/* Panel de éxito tras enviar los 3 datos */
+.donor-success {
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.9rem;
+}
+
+.donor-success[hidden] {
+  display: none;
+}
+
+.donor-success__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.donor-success__title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-brand-dark);
+}
+
+.donor-success__text {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.donor-success__summary {
+  width: 100%;
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  text-align: left;
+}
+
+.donor-success__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.donor-success__row dt {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.donor-success__row dd {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--color-brand-dark);
+  word-break: break-word;
+}
+
+.secondary-btn {
+  width: 100%;
+  height: 2.75rem;
+  background-color: transparent;
+  color: var(--color-brand-primary);
+  border: 1.5px solid var(--color-brand-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.secondary-btn:hover {
+  background-color: var(--color-surface-muted);
+}
+
+/* --------------------------------------------------------------------------
+   2. Sección Sobre o Projeto / ONG
+   Por qué: explica la labor real de la ONG Paraíso dos Pets justo encima de la
+   galería de perros rescatados para dar contexto y transparencia.
+   -------------------------------------------------------------------------- */
+.section-tag {
+  display: inline-block;
+  background-color: var(--color-brand-cream);
+  color: var(--color-brand-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.about-section {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: clamp(3rem, 6vw, 5rem) 1.5rem;
+}
+
+.about-section__inner {
+  max-width: 52rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--color-brand-dark);
+  margin-bottom: 1.15rem;
+}
+
+.about-section__lead {
+  font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+  color: var(--color-text);
+  max-width: 44rem;
+  margin-inline: auto;
+  margin-bottom: 1rem;
+}
+
+.about-section__text {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  max-width: 42rem;
+  margin-inline: auto;
+  margin-bottom: 2.25rem;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.about-stats__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.about-stats__number {
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 700;
+  color: var(--color-brand-primary);
+  letter-spacing: -0.02em;
+}
+
+.about-stats__label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   3. Sección Imagens dos Cães (Franja de paneles desiguales)
+   Por qué: mantiene la galería fotográfica real del refugio en la parte inferior.
+   -------------------------------------------------------------------------- */
+.dogs-section {
+  background-color: var(--color-bg);
+  padding-top: clamp(3rem, 5vw, 4.5rem);
+  padding-bottom: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.dogs-section__header {
+  text-align: center;
+  padding-inline: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.showcase__band {
+  display: flex;
+  width: 100%;
+  height: 62svh;
+  min-height: 24rem;
+  max-height: 40rem;
+  overflow: hidden;
+}
+
+.showcase__panel {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  cursor: pointer;
+  transition: flex-grow 500ms var(--ease-out);
+}
+
+.showcase__panel--1 {
+  flex: 5 1 0%;
+}
+
+.showcase__panel--2 {
+  flex: 2 1 0%;
+}
+
+.showcase__panel--3 {
+  flex: 3 1 0%;
+}
+
+.showcase__panel--4 {
+  flex: 2 1 0%;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .showcase__band:hover .showcase__panel:hover {
+    flex-grow: 6;
+  }
+
+  .showcase__panel:hover img {
+    transform: scale(1.03);
+  }
+}
+
+.showcase__panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--ease-soft);
+}
+
+.showcase__scrim {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 1.25rem 1.5rem;
+  background-color: rgba(26, 58, 74, 0.82);
+  color: var(--color-brand-cream);
+  max-width: 22rem;
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.showcase__panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #ffffff;
+}
+
+.showcase__panel-sub {
+  font-size: 0.85rem;
+  color: var(--color-brand-cream);
+  margin-top: 0.35rem;
+}
+
+.showcase__name-tag {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background-color: rgba(26, 58, 74, 0.82);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+}
+
+.showcase__caption {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1rem 1.5rem 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptación responsiva para tablets y móviles
+   -------------------------------------------------------------------------- */
+@media (max-width: 56em) {
+  .cadastro-hero__inner {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .cadastro-hero__content {
+    order: 1;
+    max-width: 28rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .cadastro-hero__media {
+    order: 2;
+    max-width: 26rem;
+    padding-top: 0;
+  }
+
+  .showcase__band {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    max-height: none;
+  }
+
+  .showcase__panel {
+    aspect-ratio: 4 / 3;
+  }
+
+  .showcase__panel--1 {
+    grid-column: span 2;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 36em) {
+  .about-stats {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .showcase__band {
+    grid-template-columns: 1fr;
+  }
+
+  .showcase__panel--1 {
+    grid-column: span 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Pie de página discreto
+   -------------------------------------------------------------------------- */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}
