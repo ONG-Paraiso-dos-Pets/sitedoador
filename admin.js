@@ -330,23 +330,39 @@
 
   /**
    * Abre WhatsApp con mensaje pre-redactado y cambia automáticamente el estado a 'contatado'.
+   * Por qué evitar wa.me: el servidor de redirección wa.me de Meta corrompe emojis UTF-8 multibyte
+   * transformándolos en caracteres de reemplazo (). Al usar web.whatsapp.com en ordenadores y
+   * api.whatsapp.com en dispositivos móviles con secuencias Unicode explícitas, los emojis se
+   * renderizan al 100% sin pérdida.
    * @param {Object} donor - Datos del donador.
    */
   async function triggerWhatsApp(donor) {
     const firstName = donor.nome_completo ? donor.nome_completo.split(' ')[0] : 'amigo(a)';
     const phone = donor.telefone_e164; // E.164: 5516999999999
 
+    // Secuencias Unicode explícitas para blindar los emojis ante cualquier parser de archivo
+    const emojiSorriso = '\u{1F60A}'; // 😊
+    const emojiCao = '\u{1F436}';     // 🐶
+    const emojiPatinhas = '\u{1F43E}';// 🐾
+
     // Por qué mensaje consultivo y receptivo: agradece el registro e inicia conversación
     // sin presionar con cobro invasivo en la primera interacción.
     const message = [
-      `Olá, ${firstName}! Tudo bem? 😊`,
+      `Olá, ${firstName}! Tudo bem? ${emojiSorriso}`,
       ``,
       `Aqui é da equipe da ONG Paraíso dos Pets de Ribeirão Preto. Recebemos seu cadastro como doador no nosso site e ficamos muito felizes pelo seu carinho com os nossos mais de 130 cães resgatados!`,
       ``,
-      `Como podemos te ajudar a concluir o seu apoio hoje? 🐶🐾`
+      `Como podemos te ajudar a concluir o seu apoio hoje? ${emojiCao}${emojiPatinhas}`
     ].join('\n');
 
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    // Por qué diferenciar móvil de desktop: en desktop abre WhatsApp Web directamente evitando
+    // la pantalla intermediaria con bug de codificación; en móviles delega en el handler de la app nativa.
+    const isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const baseUrl = isMobile
+      ? 'https://api.whatsapp.com/send'
+      : 'https://web.whatsapp.com/send';
+
+    const whatsappUrl = `${baseUrl}?phone=${phone}&text=${encodeURIComponent(message)}`;
 
     // Abre el chat en una pestaña nueva
     window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
