@@ -1,0 +1,825 @@
+/* ==========================================================================
+   ONG Paraíso dos Pets · Estilos del Panel Administrativo (admin.css)
+   Por qué: interfaz profesional y limpia basada en la paleta oficial
+   de la ONG (#077172, #00B4B4, #1A3A4A) con foco en usabilidad y contraste.
+   ========================================================================== */
+
+:root {
+  --color-bg: #eef6f6;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f4f8f8;
+  --color-brand-primary: #077172;
+  --color-brand-accent: #00b4b4;
+  --color-brand-dark: #1a3a4a;
+  --color-brand-cream: #f4f4bf;
+  --color-text: #1a3a4a;
+  --color-text-muted: #4a6b74;
+  --color-border: #cde0e0;
+  --color-border-light: #e5f0f0;
+
+  --color-whatsapp: #25d366;
+  --color-whatsapp-dark: #128c7e;
+
+  --color-warning-bg: #fff8eb;
+  --color-warning-text: #9a6700;
+  --color-warning-border: #f9dfaa;
+
+  --color-info-bg: #e8f4fd;
+  --color-info-text: #0550ae;
+
+  --color-success-bg: #ecfdf5;
+  --color-success-text: #046c4e;
+
+  --color-error-bg: #fdf2f2;
+  --color-error-text: #c81e1e;
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 2px 6px rgba(26, 58, 74, 0.05);
+  --shadow-md: 0 10px 24px -8px rgba(26, 58, 74, 0.08);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   Encabezado superior del panel
+   -------------------------------------------------------------------------- */
+.admin-header {
+  background-color: var(--color-brand-primary);
+  border-bottom: 3px solid var(--color-brand-accent);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+}
+
+.admin-header__inner {
+  max-width: 84rem;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.admin-header__logo {
+  border-radius: 50%;
+  background-color: #ffffff;
+  padding: 2px;
+}
+
+.admin-header__title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-header__subtitle {
+  display: block;
+  font-size: 0.8rem;
+  opacity: 0.88;
+}
+
+.admin-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.admin-header__link {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.9;
+  transition: opacity 160ms ease;
+}
+
+.admin-header__link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.admin-header__user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: rgba(0, 0, 0, 0.15);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+.admin-header__email {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.admin-header__logout {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.admin-header__logout:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Contenedor principal
+   -------------------------------------------------------------------------- */
+.admin-main {
+  flex: 1;
+  max-width: 84rem;
+  width: 100%;
+  margin-inline: auto;
+  padding: 2rem 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tarjeta de Login / Registro de Administrador
+   -------------------------------------------------------------------------- */
+.auth-card {
+  max-width: 26rem;
+  margin: 3rem auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem 2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.auth-card__header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.auth-card__badge {
+  display: inline-block;
+  background-color: var(--color-brand-cream);
+  color: var(--color-brand-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.65rem;
+}
+
+.auth-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-brand-dark);
+}
+
+.auth-card__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.auth-tabs {
+  display: flex;
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  margin-bottom: 1.25rem;
+}
+
+.auth-tab {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.auth-tab.is-active {
+  background-color: var(--color-surface);
+  color: var(--color-brand-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-brand-dark);
+}
+
+.field-input {
+  width: 100%;
+  height: 2.85rem;
+  padding: 0 0.85rem;
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  font-family: inherit;
+  transition: border-color 160ms ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--color-brand-primary);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(7, 113, 114, 0.15);
+}
+
+.field-hint {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+}
+
+.auth-feedback {
+  font-size: 0.82rem;
+  min-height: 1.2em;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  display: none;
+}
+
+.auth-feedback.is-error {
+  display: block;
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+  border: 1px solid #f8b4b4;
+}
+
+.auth-feedback.is-success {
+  display: block;
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid #bbf7d0;
+}
+
+.submit-btn, .button-primary {
+  width: 100%;
+  height: 3rem;
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.submit-btn:hover, .button-primary:hover {
+  background-color: var(--color-brand-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard de Donadores
+   -------------------------------------------------------------------------- */
+.dashboard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-brand-dark);
+}
+
+.dashboard-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 0.65rem;
+}
+
+.button-refresh, .button-manage-admins {
+  padding: 0.55rem 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-brand-dark);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.button-refresh:hover, .button-manage-admins:hover {
+  background-color: var(--color-surface-muted);
+  border-color: var(--color-brand-primary);
+}
+
+/* Tarjetas de métricas */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.metric-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.15rem 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.metric-card--warning {
+  border-left: 4px solid var(--color-warning-text);
+}
+.metric-card--info {
+  border-left: 4px solid var(--color-info-text);
+}
+.metric-card--success {
+  border-left: 4px solid var(--color-success-text);
+}
+
+.metric-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-brand-dark);
+  line-height: 1.1;
+}
+
+/* Panel de administradores */
+.admins-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.admins-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.admins-panel__title {
+  margin: 0 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.admins-panel__desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.button-icon {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--color-text-muted);
+}
+
+.add-admin-form {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.add-admin-form .field-input {
+  flex: 1 1 16rem;
+}
+
+.add-admin-form .button-primary {
+  width: auto;
+  padding-inline: 1.25rem;
+}
+
+.admins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.admin-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.admin-item__email {
+  font-weight: 600;
+}
+
+.admin-item__meta {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin-left: 0.5rem;
+}
+
+.admin-item__remove {
+  background: none;
+  border: none;
+  color: var(--color-error-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0.45rem;
+}
+
+.admin-item__remove:hover {
+  text-decoration: underline;
+}
+
+/* Filtros y buscador */
+.filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-tabs {
+  display: flex;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  overflow-x: auto;
+}
+
+.filter-tab {
+  background: none;
+  border: none;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-tab.is-active {
+  background-color: var(--color-brand-primary);
+  color: #ffffff;
+}
+
+.search-wrap {
+  flex: 1 1 18rem;
+  max-width: 24rem;
+}
+
+.search-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 0.85rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-brand-primary);
+}
+
+/* --------------------------------------------------------------------------
+   Tabla de Donadores
+   -------------------------------------------------------------------------- */
+.table-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.donors-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.donors-table th {
+  background-color: var(--color-surface-muted);
+  color: var(--color-brand-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.donors-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+}
+
+.donors-table tr:hover td {
+  background-color: #fafdfd;
+}
+
+.table-th-actions {
+  text-align: right;
+}
+
+.donor-cell-name {
+  font-weight: 600;
+  color: var(--color-brand-dark);
+}
+
+.donor-cell-email {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+.button-copy-email {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.75rem;
+  color: var(--color-brand-primary);
+}
+
+.donor-phone-num {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.donor-phone-region {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.donor-date {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badges de Status */
+.status-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-badge--pendente {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning-border);
+}
+
+.status-badge--contatado {
+  background-color: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+.status-badge--doador_ativo {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.status-badge--arquivado {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-select {
+  margin-top: 0.25rem;
+  display: block;
+  font-size: 0.75rem;
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.2rem 0.35rem;
+  color: var(--color-brand-dark);
+  cursor: pointer;
+}
+
+/* Observaciones en celda */
+.donor-obs-btn {
+  background: none;
+  border: 1px dashed var(--color-border);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  max-width: 14rem;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.donor-obs-btn:hover {
+  border-color: var(--color-brand-primary);
+  color: var(--color-brand-primary);
+}
+
+/* Botón de WhatsApp */
+.button-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: var(--color-whatsapp);
+  color: #ffffff;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms ease, transform 120ms ease;
+}
+
+.button-whatsapp:hover {
+  background-color: var(--color-whatsapp-dark);
+}
+
+.button-whatsapp:active {
+  transform: scale(0.97);
+}
+
+.button-whatsapp svg {
+  width: 1rem;
+  height: 1rem;
+  fill: currentColor;
+}
+
+/* Estado vacío */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.empty-state__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-brand-dark);
+}
+
+.empty-state__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Diálogo de observaciones
+   -------------------------------------------------------------------------- */
+.obs-dialog {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  max-width: 28rem;
+  width: 90%;
+  box-shadow: var(--shadow-md);
+}
+
+.obs-dialog::backdrop {
+  background-color: rgba(26, 58, 74, 0.4);
+  backdrop-filter: blur(2px);
+}
+
+.obs-dialog__title {
+  margin: 0 0 0.2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.obs-dialog__subtitle {
+  margin: 0 0 1rem;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.obs-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.875rem;
+  resize: vertical;
+}
+
+.obs-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.button-secondary {
+  padding: 0.55rem 1rem;
+  background-color: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Pie de página del admin
+   -------------------------------------------------------------------------- */
+.admin-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+}

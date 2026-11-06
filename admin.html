@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#077172">
+  <title>Painel Administrativo · ONG Paraíso dos Pets</title>
+  <meta name="description" content="Painel de gestão de doadores e administração da ONG Paraíso dos Pets em Ribeirão Preto.">
+  <link rel="icon" href="assets/logo-nova.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ========================================================================
+       ENCABEZADO DEL PANEL ADMIN
+       Por qué: permite alternar entre el sitio público y cerrar sesión de forma segura.
+       ======================================================================== -->
+  <header class="admin-header">
+    <div class="admin-header__inner">
+      <div class="admin-header__brand">
+        <img src="assets/logo-nova.png" alt="Logotipo da ONG Paraíso dos Pets" class="admin-header__logo" width="44" height="44">
+        <div>
+          <span class="admin-header__title">ONG Paraíso dos Pets</span>
+          <span class="admin-header__subtitle">Painel de Doadores</span>
+        </div>
+      </div>
+
+      <nav class="admin-header__nav">
+        <a href="index.html" class="admin-header__link" target="_blank" rel="noopener">Ver site público ↗</a>
+        <div id="admin-user-info" class="admin-header__user" hidden>
+          <span id="admin-user-email" class="admin-header__email"></span>
+          <button type="button" id="logout-btn" class="admin-header__logout">Sair</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <!-- ========================================================================
+         VISTA 1: FORMULARIO DE ACCESO (LOGIN / REGISTRO ADMIN)
+         Por qué: autentica contra Neon Auth antes de permitir ver los datos personales.
+         ======================================================================== -->
+    <section id="auth-section" class="auth-card" aria-labelledby="auth-heading">
+      <div class="auth-card__header">
+        <div class="auth-card__badge">Acesso Restrito</div>
+        <h1 id="auth-heading" class="auth-card__title">Área da Equipe</h1>
+        <p class="auth-card__desc">
+          Entre com seu e-mail e senha cadastrados no sistema da ONG Paraíso dos Pets.
+        </p>
+      </div>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" id="tab-login" class="auth-tab is-active" role="tab" aria-selected="true">Entrar</button>
+        <button type="button" id="tab-signup" class="auth-tab" role="tab" aria-selected="false">Primeiro Acesso</button>
+      </div>
+
+      <form id="auth-form" class="auth-form" novalidate>
+        <div id="auth-name-group" class="field-group" hidden>
+          <label for="auth-name" class="field-label">Seu Nome</label>
+          <input type="text" id="auth-name" class="field-input" placeholder="Ex.: Maria Silva" autocomplete="name">
+        </div>
+
+        <div class="field-group">
+          <label for="auth-email" class="field-label">E-mail Administrativo</label>
+          <input type="email" id="auth-email" class="field-input" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+        </div>
+
+        <div class="field-group">
+          <label for="auth-password" class="field-label">Senha</label>
+          <input type="password" id="auth-password" class="field-input" placeholder="••••••••" autocomplete="current-password" required minlength="8">
+          <span class="field-hint" id="password-hint">Mínimo de 8 caracteres</span>
+        </div>
+
+        <div id="auth-feedback" class="auth-feedback" aria-live="polite"></div>
+
+        <button type="submit" id="auth-submit-btn" class="submit-btn">
+          Entrar no Painel
+        </button>
+      </form>
+    </section>
+
+    <!-- ========================================================================
+         VISTA 2: DASHBOARD DE GESTIÓN DE DONADORES
+         Por qué: muestra métricas, filtros y acciones directas (WhatsApp).
+         ======================================================================== -->
+    <section id="dashboard-section" class="dashboard-wrap" hidden aria-labelledby="dashboard-heading">
+      <div class="dashboard-head">
+        <div>
+          <h1 id="dashboard-heading" class="dashboard-title">Captação de Doadores</h1>
+          <p class="dashboard-subtitle">Acompanhe os cadastros recebidos pelo site e inicie o contato no WhatsApp.</p>
+        </div>
+
+        <div class="dashboard-actions">
+          <button type="button" id="refresh-donors-btn" class="button-refresh" title="Atualizar dados">
+            ↻ Atualizar
+          </button>
+          <button type="button" id="toggle-admins-btn" class="button-manage-admins">
+            👥 Gerenciar Equipe
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas de métricas -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Total Cadastrado</span>
+          <strong id="metric-total" class="metric-value">0</strong>
+        </div>
+        <div class="metric-card metric-card--warning">
+          <span class="metric-label">Aguardando Contato</span>
+          <strong id="metric-pendente" class="metric-value">0</strong>
+        </div>
+        <div class="metric-card metric-card--info">
+          <span class="metric-label">Já Contatados</span>
+          <strong id="metric-contatado" class="metric-value">0</strong>
+        </div>
+        <div class="metric-card metric-card--success">
+          <span class="metric-label">Doadores Ativos</span>
+          <strong id="metric-ativo" class="metric-value">0</strong>
+        </div>
+      </div>
+
+      <!-- Panel de gestión de administradores (expandible) -->
+      <div id="admins-panel" class="admins-panel" hidden>
+        <div class="admins-panel__header">
+          <div>
+            <h2 class="admins-panel__title">Administradores do Painel</h2>
+            <p class="admins-panel__desc">Cada administrador tem autonomia para adicionar novos membros da ONG.</p>
+          </div>
+          <button type="button" id="close-admins-btn" class="button-icon" aria-label="Fechar painel de equipe">✕</button>
+        </div>
+
+        <form id="add-admin-form" class="add-admin-form">
+          <input type="email" id="new-admin-email" class="field-input" placeholder="novo.voluntario@ong.org" required>
+          <button type="submit" id="add-admin-btn" class="button-primary">Adicionar Administrador</button>
+        </form>
+        <div id="admins-feedback" class="auth-feedback" aria-live="polite"></div>
+
+        <div class="admins-list" id="admins-list-container">
+          <!-- Lista generada por JS -->
+        </div>
+      </div>
+
+      <!-- Barra de filtros y búsqueda -->
+      <div class="filter-bar">
+        <div class="filter-tabs" role="tablist">
+          <button type="button" class="filter-tab is-active" data-status="">Todos</button>
+          <button type="button" class="filter-tab" data-status="pendente">Aguardando</button>
+          <button type="button" class="filter-tab" data-status="contatado">Contatados</button>
+          <button type="button" class="filter-tab" data-status="doador_ativo">Ativos</button>
+          <button type="button" class="filter-tab" data-status="arquivado">Arquivados</button>
+        </div>
+
+        <div class="search-wrap">
+          <input type="search" id="search-input" class="search-input" placeholder="Buscar por nome, telefone ou e-mail...">
+        </div>
+      </div>
+
+      <!-- Tabla de donadores -->
+      <div class="table-container">
+        <table class="donors-table">
+          <thead>
+            <tr>
+              <th>Doador</th>
+              <th>Telefone / Região</th>
+              <th>Cadastro</th>
+              <th>Status</th>
+              <th>Observações</th>
+              <th class="table-th-actions">Ação</th>
+            </tr>
+          </thead>
+          <tbody id="donors-tbody">
+            <!-- Filas generadas dinámicamente por JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mensaje de tabla vacía -->
+      <div id="empty-state" class="empty-state" hidden>
+        <p class="empty-state__title">Nenhum doador encontrado</p>
+        <p class="empty-state__desc">Ajuste os filtros ou aguarde novos cadastros na landing page.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal para editar observaciones -->
+  <dialog id="obs-dialog" class="obs-dialog">
+    <form method="dialog" id="obs-form">
+      <h3 class="obs-dialog__title">Anotações do Doador</h3>
+      <p id="obs-dialog-donor-name" class="obs-dialog__subtitle"></p>
+      <textarea id="obs-textarea" class="obs-textarea" rows="4" placeholder="Ex.: Prefere doar via PIX todo dia 10. Pediu fotos do Zezinho."></textarea>
+      <div class="obs-dialog__actions">
+        <button type="button" id="obs-cancel-btn" class="button-secondary">Cancelar</button>
+        <button type="submit" id="obs-save-btn" class="button-primary">Salvar Anotação</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer class="admin-footer">
+    <p>ONG Paraíso dos Pets · Ribeirão Preto, SP · Sistema de Captação e Atendimento</p>
+  </footer>
+
+  <script src="admin.js" defer></script>
+</body>
+</html>

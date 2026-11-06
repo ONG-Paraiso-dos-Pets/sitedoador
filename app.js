@@ -344,14 +344,24 @@
    * @returns {void}
    */
   function initDonorCaptureForm() {
+    // Por qué endpoint configurable con fallback: permite apuntar a localhost en desarrollo
+    // o al endpoint público de la Neon Function desplegada en producción sin recompilar.
+    const API_BASE_URL =
+      (typeof window !== 'undefined' && window.ONG_CONFIG && window.ONG_CONFIG.API_URL) ||
+      'https://br-dark-sea-bc1s1p2m-doadores.compute.c-16.us-east-1.aws.neon.tech';
+
     const formEl = document.getElementById('donor-capture-form');
     const nameInput = /** @type {HTMLInputElement | null} */ (document.getElementById('donor-name'));
     const phoneInput = /** @type {HTMLInputElement | null} */ (document.getElementById('donor-phone'));
     const emailInput = /** @type {HTMLInputElement | null} */ (document.getElementById('donor-email'));
+    const consentInput = /** @type {HTMLInputElement | null} */ (document.getElementById('donor-consent'));
+    const siteHoneypot = /** @type {HTMLInputElement | null} */ (document.getElementById('donor-site'));
+    const submitBtn = /** @type {HTMLButtonElement | null} */ (document.getElementById('donor-submit-btn'));
 
     const nameFeedback = document.getElementById('donor-name-feedback');
     const phoneFeedback = document.getElementById('donor-phone-feedback');
     const emailFeedback = document.getElementById('donor-email-feedback');
+    const consentFeedback = document.getElementById('donor-consent-feedback');
 
     const successPanel = document.getElementById('donor-success-panel');
     const summaryName = document.getElementById('summary-donor-name');
@@ -412,7 +422,16 @@
       renderFieldStatus(emailInput, emailFeedback, res, Boolean(emailInput.value.trim()));
     });
 
-    formEl.addEventListener('submit', (event) => {
+    if (consentInput && consentFeedback) {
+      consentInput.addEventListener('change', () => {
+        if (consentInput.checked) {
+          consentFeedback.textContent = '';
+          consentFeedback.classList.remove('is-error');
+        }
+      });
+    }
+
+    formEl.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (state.isSubmitting) {
         return;
@@ -439,38 +458,96 @@
         return;
       }
 
+      if (consentInput && !consentInput.checked) {
+        if (consentFeedback) {
+          consentFeedback.textContent = 'É necessário autorizar o contato para concluir o cadastro.';
+          consentFeedback.classList.add('is-error');
+        }
+        consentInput.focus();
+        return;
+      }
+
       state.isSubmitting = true;
+      const originalBtnText = submitBtn ? submitBtn.textContent : 'Cadastrar';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Cadastrando...';
+      }
 
       try {
-        const payload = {
-          nome: nameCheck.cleanName,
-          telefone: phoneCheck.formatted,
-          email: emailCheck.cleanEmail,
-          registeredAt: new Date().toISOString()
-        };
-        window.localStorage.setItem('paraiso_pets_last_donor', JSON.stringify(payload));
-      } catch (storageError) {
-        logger.error({ error: String(storageError) }, 'Local storage write skipped');
-      }
+        // Por qué petición asíncrona real: guarda los datos de forma duradera en Lakebase Postgres
+        // a través de Neon Functions, garantizando atomicidad y validación completa en el servidor.
+        const response = await fetch(`${API_BASE_URL}/doadores`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nome: nameCheck.cleanName,
+            telefone: phoneCheck.formatted,
+            email: emailCheck.cleanEmail,
+            consentimento: true,
+            site: siteHoneypot ? siteHoneypot.value : ''
+          })
+        });
 
-      if (summaryName) {
-        summaryName.textContent = nameCheck.cleanName;
-      }
-      if (summaryPhone) {
-        summaryPhone.textContent = phoneCheck.formatted;
-      }
-      if (summaryEmail) {
-        summaryEmail.textContent = emailCheck.cleanEmail;
-      }
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          const mensagemErro = errorData.erro || 'Não foi possível cadastrar agora. Tente novamente.';
+          if (emailFeedback) {
+            emailFeedback.textContent = mensagemErro;
+            emailFeedback.classList.add('is-error');
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalBtnText;
+          }
+          state.isSubmitting = false;
+          return;
+        }
 
-      formEl.setAttribute('hidden', 'hidden');
-      if (successPanel) {
-        successPanel.removeAttribute('hidden');
-        successPanel.focus();
-      }
+        try {
+          const payload = {
+            nome: nameCheck.cleanName,
+            telefone: phoneCheck.formatted,
+            email: emailCheck.cleanEmail,
+            registeredAt: new Date().toISOString()
+          };
+          window.localStorage.setItem('paraiso_pets_last_donor', JSON.stringify(payload));
+        } catch (storageError) {
+          logger.error({ error: String(storageError) }, 'Local storage write skipped');
+        }
 
-      logger.info({ dddRegion: phoneCheck.dddRegion }, 'Donor registration completed');
-      state.isSubmitting = false;
+        if (summaryName) {
+          summaryName.textContent = nameCheck.cleanName;
+        }
+        if (summaryPhone) {
+          summaryPhone.textContent = phoneCheck.formatted;
+        }
+        if (summaryEmail) {
+          summaryEmail.textContent = emailCheck.cleanEmail;
+        }
+
+        formEl.setAttribute('hidden', 'hidden');
+        if (successPanel) {
+          successPanel.removeAttribute('hidden');
+          successPanel.focus();
+        }
+
+        logger.info({ dddRegion: phoneCheck.dddRegion }, 'Donor registration completed');
+      } catch (networkError) {
+        logger.error({ error: String(networkError) }, 'Network error during donor submission');
+        if (emailFeedback) {
+          emailFeedback.textContent = 'Erro de conexão. Verifique sua internet e tente novamente.';
+          emailFeedback.classList.add('is-error');
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+        }
+        state.isSubmitting = false;
+      }
     });
 
     if (resetFormBtn && successPanel) {

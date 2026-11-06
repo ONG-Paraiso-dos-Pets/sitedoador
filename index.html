@@ -92,6 +92,31 @@
               <span id="donor-email-feedback" class="field-feedback" aria-live="polite"></span>
             </div>
 
+            <!-- Por qué este campo honeypot oculto: atrapa bots automáticos de spam
+                 sin alterar la experiencia del usuario legítimo ni requerir captchas invasivos -->
+            <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+              <input type="text" name="site" id="donor-site" tabindex="-1" autocomplete="off">
+            </div>
+
+            <!-- Por qué consentimiento explícito: exigencia legal de la LGPD en Brasil
+                 para autorizar el contacto activo por WhatsApp y correo electrónico -->
+            <div class="field-group field-group--checkbox">
+              <label class="checkbox-container">
+                <input
+                  type="checkbox"
+                  id="donor-consent"
+                  name="consentimento"
+                  class="checkbox-input"
+                  required
+                  aria-describedby="donor-consent-feedback"
+                >
+                <span class="checkbox-label">
+                  Autorizo a ONG Paraíso dos Pets a entrar em contato via WhatsApp e e-mail.
+                </span>
+              </label>
+              <span id="donor-consent-feedback" class="field-feedback" aria-live="polite"></span>
+            </div>
+
             <button type="submit" id="donor-submit-btn" class="submit-btn">
               Cadastrar
             </button>

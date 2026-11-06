@@ -244,6 +244,39 @@ button {
   font-weight: 500;
 }
 
+/* --------------------------------------------------------------------------
+   Checkbox de consentimiento LGPD
+   Por qué: diseño accesible y alineado que mantiene el cuadro de verificación
+   con tamaño táctil adecuado (flex-shrink: 0) sin deformarse con el texto largo.
+   -------------------------------------------------------------------------- */
+.field-group--checkbox {
+  margin-top: 0.2rem;
+  gap: 0.25rem;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-input {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.15rem;
+  accent-color: var(--color-brand-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-label {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: #3b4248;
+}
+
 .submit-btn {
   margin-top: 0.5rem;
   width: 100%;
