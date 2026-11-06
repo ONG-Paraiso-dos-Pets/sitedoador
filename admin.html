@@ -60,8 +60,8 @@
 
       <form id="auth-form" class="auth-form" novalidate>
         <div id="auth-name-group" class="field-group" hidden>
-          <label for="auth-name" class="field-label">Seu Nome</label>
-          <input type="text" id="auth-name" class="field-input" placeholder="Ex.: Maria Silva" autocomplete="name">
+          <label for="auth-name" class="field-label">Nome Sobrenome</label>
+          <input type="text" id="auth-name" class="field-input" placeholder="Ex.: João Schiavoni" autocomplete="name">
         </div>
 
         <div class="field-group">
@@ -72,7 +72,12 @@
         <div class="field-group">
           <label for="auth-password" class="field-label">Senha</label>
           <input type="password" id="auth-password" class="field-input" placeholder="••••••••" autocomplete="current-password" required minlength="8">
-          <span class="field-hint" id="password-hint">Mínimo de 8 caracteres</span>
+          <span class="field-hint" id="password-hint" hidden>Mínimo de 8 caracteres</span>
+        </div>
+
+        <div id="auth-confirm-password-group" class="field-group" hidden>
+          <label for="auth-password-confirm" class="field-label">Confirmação de Senha</label>
+          <input type="password" id="auth-password-confirm" class="field-input" placeholder="Repita a senha" autocomplete="new-password" minlength="8">
         </div>
 
         <div id="auth-feedback" class="auth-feedback" aria-live="polite"></div>

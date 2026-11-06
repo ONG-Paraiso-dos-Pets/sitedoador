@@ -96,74 +96,43 @@
   }
 
   /* --------------------------------------------------------------------------
-     MÓDULO DE AUTENTICACIÓN (NEON AUTH)
+     MÓDULO DE AUTENTICACIÓN (NEON AUTH Y SESIÓN)
      -------------------------------------------------------------------------- */
 
   /**
-   * Extrae el token JWT devuelto por Neon Auth a través del cuerpo o el endpoint /token.
-   * @param {Response} initialResponse - Respuesta de sign-in o sign-up.
-   * @returns {Promise<string>} Token JWT firmado.
-   */
-  async function extractJwtToken(initialResponse) {
-    try {
-      const data = await initialResponse.clone().json();
-      if (data && data.token) return data.token;
-      if (data && data.data && data.data.token) return data.data.token;
-    } catch {
-      // Si la respuesta no tenía JSON de token directo, continúa con /token.
-    }
-
-    const headerToken = initialResponse.headers.get('set-auth-jwt');
-    if (headerToken) return headerToken;
-
-    // Por qué llamar a /token con credentials: Managed Better Auth fija una cookie
-    // de sesión HttpOnly y este endpoint emite el JWT correspondiente para APIs externas.
-    const tokenRes = await fetch(`${CONFIG.AUTH_URL}/token`, {
-      credentials: 'include'
-    });
-    if (tokenRes.ok) {
-      const tokenData = await tokenRes.json();
-      return tokenData.token || (tokenData.data && tokenData.data.token) || '';
-    }
-    return '';
-  }
-
-  /**
-   * Valida si el usuario autenticado tiene rol de administrador en el backend.
-   * @param {string} token - Token JWT de Neon Auth.
-   * @returns {Promise<boolean>} True si es administrador válido.
+   * Valida si el token guardado en sesión sigue activo llamando al endpoint /admin/eu.
+   * Por qué: asegura que tokens expirados o revocados no den acceso visual al dashboard.
+   * @param {string} token - Token JWT de sesión.
+   * @returns {Promise<boolean>} True si el token es válido y pertenece a un administrador.
    */
   async function verifyAdminAccess(token) {
     state.token = token;
-    const res = await apiFetch('/admin/eu');
-    if (!res.ok) {
+    try {
+      const res = await apiFetch('/admin/eu');
+      if (!res.ok) {
+        state.token = '';
+        sessionStorage.removeItem(CONFIG.STORAGE_TOKEN_KEY);
+        return false;
+      }
+      const data = await res.json();
+      state.currentAdminEmail = data.email || '';
+      sessionStorage.setItem(CONFIG.STORAGE_TOKEN_KEY, token);
+      return true;
+    } catch {
       state.token = '';
       sessionStorage.removeItem(CONFIG.STORAGE_TOKEN_KEY);
       return false;
     }
-    const data = await res.json();
-    state.currentAdminEmail = data.email || '';
-    sessionStorage.setItem(CONFIG.STORAGE_TOKEN_KEY, token);
-    return true;
   }
 
   /**
-   * Cierra la sesión activa en el navegador y limpia la memoria.
+   * Cierra la sesión activa en el navegador y limpia la memoria local.
+   * Por qué: el JWT se almacena en sessionStorage para aislarlo de otras pestañas o ventanas.
    */
   async function logout() {
     state.token = '';
     state.currentAdminEmail = '';
     sessionStorage.removeItem(CONFIG.STORAGE_TOKEN_KEY);
-
-    try {
-      await fetch(`${CONFIG.AUTH_URL}/sign-out`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-    } catch {
-      // Ignora errores de red durante el logout.
-    }
-
     showAuthView();
   }
 
@@ -594,104 +563,183 @@
   }
 
   /* --------------------------------------------------------------------------
-     FORMULARIO DE LOGIN / REGISTRO
+     MÓDULO DE FORMULARIO DE ACCESO (LOGIN Y PRIMER ACCESO)
+     Por qué: el backend proxy en Neon Functions valida el correo contra la tabla
+     'administradores' y delega en Neon Auth con Origin confiable, evitando problemas CSRF
+     cuando el panel se ejecuta de forma local o remota.
      -------------------------------------------------------------------------- */
 
   let isSignUpMode = false;
   const tabLogin = document.getElementById('tab-login');
   const tabSignup = document.getElementById('tab-signup');
   const authNameGroup = document.getElementById('auth-name-group');
+  const authConfirmPasswordGroup = document.getElementById('auth-confirm-password-group');
+  const passwordHint = document.getElementById('password-hint');
   const authSubmitBtn = document.getElementById('auth-submit-btn');
   const authForm = document.getElementById('auth-form');
   const authEmailInput = document.getElementById('auth-email');
   const authPasswordInput = document.getElementById('auth-password');
+  const authPasswordConfirmInput = document.getElementById('auth-password-confirm');
   const authNameInput = document.getElementById('auth-name');
 
-  if (tabLogin && tabSignup) {
-    tabLogin.addEventListener('click', () => {
-      isSignUpMode = false;
-      tabLogin.classList.add('is-active');
-      tabSignup.classList.remove('is-active');
-      if (authNameGroup) authNameGroup.setAttribute('hidden', 'hidden');
-      if (authSubmitBtn) authSubmitBtn.textContent = 'Entrar no Painel';
-    });
+  /**
+   * Muestra mensaje explicativo en el área de alertas del formulario.
+   * @param {string} message - Mensaje en portugués para el usuario.
+   * @param {'error'|'success'} [type='error'] - Variante visual.
+   */
+  function showAuthFeedback(message, type = 'error') {
+    if (!authFeedback) return;
+    authFeedback.textContent = message;
+    authFeedback.className = `auth-feedback is-${type}`;
+  }
 
-    tabSignup.addEventListener('click', () => {
-      isSignUpMode = true;
+  /**
+   * Limpia cualquier mensaje de feedback visual previo.
+   */
+  function clearAuthFeedback() {
+    if (!authFeedback) return;
+    authFeedback.textContent = '';
+    authFeedback.className = 'auth-feedback';
+  }
+
+  /**
+   * Cambia la interfaz a la pestaña 'Entrar'.
+   * Por qué: oculta campos innecesarios y agiliza el login recurrente.
+   */
+  function setLoginTab() {
+    isSignUpMode = false;
+    if (tabLogin) {
+      tabLogin.classList.add('is-active');
+      tabLogin.setAttribute('aria-selected', 'true');
+    }
+    if (tabSignup) {
+      tabSignup.classList.remove('is-active');
+      tabSignup.setAttribute('aria-selected', 'false');
+    }
+
+    if (authNameGroup) authNameGroup.setAttribute('hidden', 'hidden');
+    if (authConfirmPasswordGroup) authConfirmPasswordGroup.setAttribute('hidden', 'hidden');
+    if (passwordHint) passwordHint.setAttribute('hidden', 'hidden');
+    if (authPasswordInput) authPasswordInput.setAttribute('autocomplete', 'current-password');
+    if (authSubmitBtn) authSubmitBtn.textContent = 'Entrar no Painel';
+
+    clearAuthFeedback();
+  }
+
+  /**
+   * Cambia la interfaz a la pestaña 'Primeiro Acesso'.
+   * Por qué: solicita nombre completo, contraseña y confirmación para crear la cuenta.
+   */
+  function setSignUpTab() {
+    isSignUpMode = true;
+    if (tabSignup) {
       tabSignup.classList.add('is-active');
+      tabSignup.setAttribute('aria-selected', 'true');
+    }
+    if (tabLogin) {
       tabLogin.classList.remove('is-active');
-      if (authNameGroup) authNameGroup.removeAttribute('hidden');
-      if (authSubmitBtn) authSubmitBtn.textContent = 'Criar Senha de Acesso';
-    });
+      tabLogin.setAttribute('aria-selected', 'false');
+    }
+
+    if (authNameGroup) authNameGroup.removeAttribute('hidden');
+    if (authConfirmPasswordGroup) authConfirmPasswordGroup.removeAttribute('hidden');
+    if (passwordHint) passwordHint.removeAttribute('hidden');
+    if (authPasswordInput) authPasswordInput.setAttribute('autocomplete', 'new-password');
+    if (authSubmitBtn) authSubmitBtn.textContent = 'Criar Senha de Acesso';
+
+    clearAuthFeedback();
+  }
+
+  if (tabLogin && tabSignup) {
+    tabLogin.addEventListener('click', setLoginTab);
+    tabSignup.addEventListener('click', setSignUpTab);
   }
 
   if (authForm) {
     authForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      clearAuthFeedback();
+
       const email = authEmailInput ? authEmailInput.value.trim().toLowerCase() : '';
       const password = authPasswordInput ? authPasswordInput.value : '';
-      const name = authNameInput ? authNameInput.value.trim() : '';
 
-      if (!email || !password) return;
+      if (!email) {
+        showAuthFeedback('Por favor, informe seu e-mail administrativo.');
+        authEmailInput?.focus();
+        return;
+      }
 
-      if (authFeedback) {
-        authFeedback.textContent = '';
-        authFeedback.className = 'auth-feedback';
+      if (!password) {
+        showAuthFeedback('Por favor, informe sua senha.');
+        authPasswordInput?.focus();
+        return;
+      }
+
+      let name = '';
+      if (isSignUpMode) {
+        name = authNameInput ? authNameInput.value.trim() : '';
+        const passwordConfirm = authPasswordConfirmInput ? authPasswordConfirmInput.value : '';
+
+        // Por qué exigir nombre y apellido: garantiza trazabilidad en el registro de auditoría.
+        const nameParts = name.split(/\s+/).filter((p) => p.length >= 2);
+        if (nameParts.length < 2) {
+          showAuthFeedback('Por favor, digite seu nome e sobrenome completos.');
+          authNameInput?.focus();
+          return;
+        }
+
+        if (password.length < 8) {
+          showAuthFeedback('A senha deve conter no mínimo 8 caracteres.');
+          authPasswordInput?.focus();
+          return;
+        }
+
+        if (password !== passwordConfirm) {
+          showAuthFeedback('As senhas não coincidem. Digite a mesma senha nos dois campos.');
+          authPasswordConfirmInput?.focus();
+          return;
+        }
       }
 
       if (authSubmitBtn) {
         authSubmitBtn.disabled = true;
-        authSubmitBtn.textContent = 'Aguarde...';
+        authSubmitBtn.textContent = isSignUpMode ? 'Criando acesso...' : 'Entrando...';
       }
 
       try {
-        const endpoint = isSignUpMode ? `${CONFIG.AUTH_URL}/sign-up/email` : `${CONFIG.AUTH_URL}/sign-in/email`;
-        const bodyPayload = isSignUpMode ? { email, password, name: name || 'Admin' } : { email, password };
+        const endpoint = isSignUpMode ? '/auth/primeiro-acesso' : '/auth/login';
+        const bodyPayload = isSignUpMode
+          ? { nome: name, email, senha: password }
+          : { email, senha: password };
 
-        const authRes = await fetch(endpoint, {
+        const res = await fetch(`${CONFIG.API_URL}${endpoint}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify(bodyPayload)
         });
 
-        if (!authRes.ok) {
-          const errData = await authRes.json().catch(() => ({}));
-          const errMsg = errData.message || 'Credenciais inválidas. Verifique seu e-mail e senha.';
-          if (authFeedback) {
-            authFeedback.textContent = errMsg;
-            authFeedback.className = 'auth-feedback is-error';
-          }
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          const msg = data.erro || 'Não foi possível completar o acesso. Verifique os dados informados.';
+          showAuthFeedback(msg, 'error');
           return;
         }
 
-        const token = await extractJwtToken(authRes);
-        if (!token) {
-          if (authFeedback) {
-            authFeedback.textContent = 'Não foi possível emitir o token de sessão. Tente novamente.';
-            authFeedback.className = 'auth-feedback is-error';
-          }
+        if (!data.token) {
+          showAuthFeedback('Token de sessão não recebido. Tente novamente em instantes.');
           return;
         }
 
-        const isAuthorized = await verifyAdminAccess(token);
-        if (!isAuthorized) {
-          if (authFeedback) {
-            authFeedback.textContent =
-              'Seu e-mail foi autenticado, mas não possui permissão de administrador neste painel. Peça a um administrador para cadastrar seu e-mail.';
-            authFeedback.className = 'auth-feedback is-error';
-          }
-          return;
-        }
+        // Por qué almacenar en sessionStorage: la sesión se cierra automáticamente al cerrar la pestaña.
+        state.token = data.token;
+        state.currentAdminEmail = data.email || email;
+        sessionStorage.setItem(CONFIG.STORAGE_TOKEN_KEY, data.token);
 
-        // Acceso autorizado con éxito
         showDashboardView();
       } catch (err) {
         console.error('Error de autenticación:', err);
-        if (authFeedback) {
-          authFeedback.textContent = 'Erro de conexão com o servidor de autenticação.';
-          authFeedback.className = 'auth-feedback is-error';
-        }
+        showAuthFeedback('Erro de conexão com o servidor. Verifique sua internet ou tente novamente.');
       } finally {
         if (authSubmitBtn) {
           authSubmitBtn.disabled = false;
